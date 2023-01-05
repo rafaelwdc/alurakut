@@ -14,12 +14,12 @@ function ProfileSidebar(propriedades) {
 export default function Home() {
   const githubUser = 'rafaelwdc'
   const pessoasFavoritas = [
-    'juunegreiros', 
-    'omariosouto', 
-    'peas', 
-    'rafaballerini', 
-    'marcobrunodev', 
-    'felipefialho'
+    {key: 1, valor:'juunegreiros'}, 
+    {key: 2, valor:'omariosouto'}, 
+    {key: 3, valor:'peas'}, 
+    {key: 4, valor:'rafaballerini'}, 
+    {key: 5, valor:'marcobrunodev'}, 
+    {key: 6, valor:'felipefialho'}
   ]
 
   return (
@@ -44,12 +44,12 @@ export default function Home() {
             </h2>
 
             <ul>
-              {pessoasFavoritas.map((itemAtual) => {
+              {pessoasFavoritas.map(({key, valor}) => {
                 return (
                   <li>
-                    <a href={`/users/${itemAtual}`} key={itemAtual}>
-                      <img src={`https://github.com/${itemAtual}.png`} />
-                      <span>{itemAtual}</span>
+                    <a href={`/users/${valor}`} key={key}>
+                      <img src={`https://github.com/${valor}.png`} />
+                      <span>{valor}</span>
                     </a>
                   </li>
                 )
