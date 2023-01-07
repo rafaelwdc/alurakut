@@ -21,17 +21,37 @@ function ProfileSidebar(propriedades) {
   )
 }
 
+function ProfileRelationsBox(propriedades) {
+  return (
+    <ProfileRelationsBoxWrapper>
+      <h2 className="smallTitle">
+        {propriedades.title} ({propriedades.items.length})
+      </h2>
+      <ul>
+        {/* {seguidores.map((itemAtual) => {
+                return (
+                  < li key={itemAtual} >
+                    <a href={`/users/${itemAtual}`} >
+                      <img src={`https://github.com/${itemAtual}.png`} alt={itemAtual} />
+                      <span>{itemAtual}</span>
+                    </a>
+                  </li>
+                )
+              })} */}
+      </ul>
+    </ProfileRelationsBoxWrapper>
+  )
+}
+
 export default function Home() {
   const githubUser = 'rafaelwdc'
   const [comunidades, setComunidades] = React.useState([{
     id: new Date().toISOString(),
     title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg' 
+    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
   }])
   // const comunidades = comunidades[0]
   // const alteradorDeComunidades = comunidades[1]
-
-  console.log("nosso teste ", comunidades);
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
@@ -40,6 +60,17 @@ export default function Home() {
     'marcobrunodev',
     'felipefialho'
   ]
+
+  const [seguidores, setSeguidores] = React.useState([])
+  React.useEffect(function () {
+    fetch('https://api.github.com/users/peas/followers')
+    .then(function (respostaDoServidor) {
+      return respostaDoServidor.json()
+    })
+    .then(function (respostaCompleta) {
+      setSeguidores(respostaCompleta)
+    })
+  }, [])
 
   return (
     <>
@@ -95,6 +126,7 @@ export default function Home() {
           </Box>
         </div>
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
+          <ProfileRelationsBox items={seguidores} title='Seguidores' />
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
               Pessoas da comunidade ({pessoasFavoritas.length})
@@ -113,7 +145,7 @@ export default function Home() {
             </ul>
           </ProfileRelationsBoxWrapper>
           <ProfileRelationsBoxWrapper>
-          <h2 className="smallTitle">
+            <h2 className="smallTitle">
               Comunidade{comunidades.length > 1 ? 's' : ''} ({comunidades.length})
             </h2>
             {<ul>
