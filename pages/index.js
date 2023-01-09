@@ -45,11 +45,7 @@ function ProfileRelationsBox(propriedades) {
 
 export default function Home() {
   const githubUser = 'rafaelwdc'
-  const [comunidades, setComunidades] = React.useState([{
-    id: new Date().toISOString(),
-    title: 'Eu odeio acordar cedo',
-    image: 'https://alurakut.vercel.app/capa-comunidade-01.jpg'
-  }])
+  const [comunidades, setComunidades] = React.useState([])
   // const comunidades = comunidades[0]
   // const alteradorDeComunidades = comunidades[1]
   const pessoasFavoritas = [
@@ -62,19 +58,51 @@ export default function Home() {
   ]
 
   const [seguidores, setSeguidores] = React.useState([])
+
   React.useEffect(function () {
     fetch('https://api.github.com/users/peas/followers')
-    .then(function (respostaDoServidor) {
-      return respostaDoServidor.json()
+      .then(function (respostaDoServidor) {
+        return respostaDoServidor.json()
+      })
+      .then(function (respostaCompleta) {
+        setSeguidores(respostaCompleta)
+      })
+
+    // API GraphQL
+    fetch('https://graphql.datocms.com/', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'f1f7e7eefa8ae9cdb4fcc4215c2375',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        "query": `query {
+          allCommunities {
+            id 
+            title
+            imageUrl
+            creatorSlug
+          }
+        }` 
+      })
     })
-    .then(function (respostaCompleta) {
-      setSeguidores(respostaCompleta)
-    })
+      .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+      .then((respostaCompleta) => {
+        const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+        console.log(comunidadesVindasDoDato)
+        setComunidades(comunidadesVindasDoDato)
+      })
+    // .then(function (response) {
+    //   return response.json()
+    // })
+
   }, [])
+
 
   return (
     <>
-      <AlurakutMenu />
+      <AlurakutMenu githubUser={githubUser} />
       <MainGrid>
         <div className="profileArea" style={{ gridArea: 'profileArea' }}>
           <ProfileSidebar githubUser={githubUser} />
@@ -115,7 +143,7 @@ export default function Home() {
               <div>
                 <input
                   placeholder="Coloque uma URL para usarmos de Capa"
-                  name="title"
+                  name="image"
                   aria-label="Coloque uma URL para usarmos de Capa"
                 />
               </div>
@@ -148,18 +176,18 @@ export default function Home() {
             <h2 className="smallTitle">
               Comunidade{comunidades.length > 1 ? 's' : ''} ({comunidades.length})
             </h2>
-            {<ul>
+            <ul>
               {comunidades.map((itemAtual) => {
                 return (
                   < li key={`${itemAtual.id}`} >
-                    <a href={`/users/${itemAtual.title}`} >
-                      <img src={itemAtual.image} alt={itemAtual.title} />
+                    <a href={`/users/${itemAtual.id}`} >
+                      <img src={itemAtual.imageUrl} alt={itemAtual.title} />
                       <span>{itemAtual.title}</span>
                     </a>
                   </li>
                 )
               })}
-            </ul>}
+            </ul>
           </ProfileRelationsBoxWrapper>
         </div>
       </MainGrid>
