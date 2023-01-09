@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "datocms-client": "^3.4.10",
     "@next/font": "13.1.1",
     "eslint": "8.31.0",
     "eslint-config-next": "13.1.1",
@@ -17,5 +16,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "styled-components": "^5.3.6"
+  },
+  "devDependencies": {
+    "datocms-client": "^3.5.21"
   }
 }

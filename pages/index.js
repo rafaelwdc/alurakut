@@ -21,7 +21,7 @@ function ProfileSidebar(propriedades) {
   )
 }
 
-function ProfileRelationsBox(propriedades) {
+function ProfileRelationsBox(propriedades, seguidores) {
   return (
     <ProfileRelationsBoxWrapper>
       <h2 className="smallTitle">
@@ -30,10 +30,10 @@ function ProfileRelationsBox(propriedades) {
       <ul>
         {/* {seguidores.map((itemAtual) => {
                 return (
-                  < li key={itemAtual} >
-                    <a href={`/users/${itemAtual}`} >
-                      <img src={`https://github.com/${itemAtual}.png`} alt={itemAtual} />
-                      <span>{itemAtual}</span>
+                  < li key={itemAtual.id} >
+                    <a href={`/users/${itemAtual.login}`} >
+                      <img src={itemAtual.avatar_url} alt={itemAtual.login} />
+                      <span>{itemAtual.login}</span>
                     </a>
                   </li>
                 )
@@ -67,38 +67,36 @@ export default function Home() {
       .then(function (respostaCompleta) {
         setSeguidores(respostaCompleta)
       })
-
     // API GraphQL
     fetch('https://graphql.datocms.com/', {
       method: 'POST',
       headers: {
-        'Authorization': 'f1f7e7eefa8ae9cdb4fcc4215c2375',
+        'Authorization': 'f26f6f6babf659baace59c24d85169',
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({
-        "query": `query {
-          allCommunities {
-            id 
-            title
-            imageUrl
-            creatorSlug
-          }
-        }` 
-      })
+      body: JSON.stringify({ "query": `query {
+        allCommunities {
+          id 
+          title
+          imageUrl
+          creatorSlug
+        }
+      }` })
     })
-      .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
-      .then((respostaCompleta) => {
-        const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
-        console.log(comunidadesVindasDoDato)
-        setComunidades(comunidadesVindasDoDato)
-      })
+    .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+    .then((respostaCompleta) => {
+      const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+      console.log(comunidadesVindasDoDato)
+      setComunidades(comunidadesVindasDoDato)
+    })
     // .then(function (response) {
     //   return response.json()
     // })
 
   }, [])
 
+  console.log('lista de seguidores: ', seguidores);
 
   return (
     <>
@@ -124,14 +122,25 @@ export default function Home() {
               console.log(dadosDoForm.get('image'));
 
               const comunidade = {
-                id: new Date().toISOString(),
                 title: dadosDoForm.get('title'),
-                image: dadosDoForm.get('image'),
+                imageUrl: dadosDoForm.get('image'),
+                creatorSlug: githubUser
               }
 
-              // comunidades.push('Alura Stars')
-              const comunidadesAtualizadas = [...comunidades, comunidade]
-              setComunidades(comunidadesAtualizadas)
+              fetch('/api/comunidades', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(comunidade)
+              })
+              .then(async (response) => {
+                const dados = await response.json();
+                console.log(dados.registroCriado);
+                const comunidade = dados.registroCriado;
+                const comunidadesAtualizadas = [...comunidades, comunidade];
+                setComunidades(comunidadesAtualizadas)
+              })
             }}>
               <div>
                 <input
