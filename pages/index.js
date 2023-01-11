@@ -87,7 +87,6 @@ export default function Home() {
     .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
     .then((respostaCompleta) => {
       const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
-      console.log(comunidadesVindasDoDato)
       setComunidades(comunidadesVindasDoDato)
     })
     // .then(function (response) {
@@ -95,8 +94,6 @@ export default function Home() {
     // })
 
   }, [])
-
-  console.log('lista de seguidores: ', seguidores);
 
   return (
     <>
@@ -108,7 +105,7 @@ export default function Home() {
         <div className="welcomeArea" style={{ gridArea: 'welcomeArea' }}>
           <Box>
             <h1 className='title'>
-              Bem vindo(a)
+              Bem vindo(a) @{githubUser}
             </h1>
             <OrkutNostalgicIconSet />
           </Box>
@@ -136,7 +133,6 @@ export default function Home() {
               })
               .then(async (response) => {
                 const dados = await response.json();
-                console.log(dados.registroCriado);
                 const comunidade = dados.registroCriado;
                 const comunidadesAtualizadas = [...comunidades, comunidade];
                 setComunidades(comunidadesAtualizadas)
