@@ -21,33 +21,12 @@ function ProfileSidebar(propriedades) {
   )
 }
 
-function ProfileRelationsBox(propriedades, seguidores) {
-  return (
-    <ProfileRelationsBoxWrapper>
-      <h2 className="smallTitle">
-        {propriedades.title} ({propriedades.items.length})
-      </h2>
-      <ul>
-        {/* {seguidores.map((itemAtual) => {
-                return (
-                  < li key={itemAtual.id} >
-                    <a href={`/users/${itemAtual.login}`} >
-                      <img src={itemAtual.avatar_url} alt={itemAtual.login} />
-                      <span>{itemAtual.login}</span>
-                    </a>
-                  </li>
-                )
-              })} */}
-      </ul>
-    </ProfileRelationsBoxWrapper>
-  )
-}
+
 
 export default function Home() {
   const githubUser = 'rafaelwdc'
   const [comunidades, setComunidades] = React.useState([])
-  // const comunidades = comunidades[0]
-  // const alteradorDeComunidades = comunidades[1]
+  const [seguidores, setSeguidores] = React.useState([])
   const pessoasFavoritas = [
     'juunegreiros',
     'omariosouto',
@@ -57,9 +36,23 @@ export default function Home() {
     'felipefialho'
   ]
 
-  const [seguidores, setSeguidores] = React.useState([])
-
   React.useEffect(function () {
+    fetch('https://api.github.com/users/peas/followers')
+      .then(resposta => resposta.json())
+      .then(function (seguidores) {
+        let seguidoreesArray = []
+
+        seguidores.map(seguidor => {
+          seguidoreesArray.push({
+            id: seguidor.id,
+            link: seguidor.html_url,
+            imageUrl: seguidor.avatar_url,
+            title: seguidor.login
+          })
+        })
+        setSeguidores(seguidoreesArray)
+      })
+
     fetch('https://api.github.com/users/peas/followers')
       .then(function (respostaDoServidor) {
         return respostaDoServidor.json()
@@ -75,7 +68,8 @@ export default function Home() {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
-      body: JSON.stringify({ "query": `query {
+      body: JSON.stringify({
+        "query": `query {
         allCommunities {
           id 
           title
@@ -84,11 +78,11 @@ export default function Home() {
         }
       }` })
     })
-    .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
-    .then((respostaCompleta) => {
-      const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
-      setComunidades(comunidadesVindasDoDato)
-    })
+      .then((response) => response.json()) // Pega o retorno do response.json() e já retorna
+      .then((respostaCompleta) => {
+        const comunidadesVindasDoDato = respostaCompleta.data.allCommunities;
+        setComunidades(comunidadesVindasDoDato)
+      })
     // .then(function (response) {
     //   return response.json()
     // })
@@ -131,12 +125,12 @@ export default function Home() {
                 },
                 body: JSON.stringify(comunidade)
               })
-              .then(async (response) => {
-                const dados = await response.json();
-                const comunidade = dados.registroCriado;
-                const comunidadesAtualizadas = [...comunidades, comunidade];
-                setComunidades(comunidadesAtualizadas)
-              })
+                .then(async (response) => {
+                  const dados = await response.json();
+                  const comunidade = dados.registroCriado;
+                  const comunidadesAtualizadas = [...comunidades, comunidade];
+                  setComunidades(comunidadesAtualizadas)
+                })
             }}>
               <div>
                 <input
@@ -159,16 +153,33 @@ export default function Home() {
           </Box>
         </div>
         <div className="profileRelationsArea" style={{ gridArea: 'profileRelationsArea' }}>
-          <ProfileRelationsBox items={seguidores} title='Seguidores' />
           <ProfileRelationsBoxWrapper>
             <h2 className="smallTitle">
-              Pessoas da comunidade ({pessoasFavoritas.length})
+              Seguidore{seguidores.length > 1 ? 's' : ''} ({seguidores.length})
+            </h2>
+            <ul>
+              {seguidores.map((itemAtual) => {
+                {}
+                return (
+                  < li key={itemAtual.id} >
+                    <a href={`/users/${itemAtual.login}`} >
+                      <img src={itemAtual.avatar_url} alt={itemAtual.login} />
+                      <span>{itemAtual.login}</span>
+                    </a>
+                  </li>
+                )
+              })}
+            </ul>
+          </ProfileRelationsBoxWrapper>
+          <ProfileRelationsBoxWrapper>
+            <h2 className="smallTitle">
+              Pessoa{pessoasFavoritas.length > 1 ? 's' : ''} da comunidade ({pessoasFavoritas.length})
             </h2>
             <ul>
               {pessoasFavoritas.map((itemAtual) => {
                 return (
                   < li key={itemAtual.id} >
-                    <a href={`/users/${itemAtual}`} >
+                    <a href={`https://github.com/${itemAtual}`} >
                       <img src={`https://github.com/${itemAtual}.png`} alt={itemAtual} />
                       <span>{itemAtual}</span>
                     </a>
