@@ -1,4 +1,4 @@
-import React, { use } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router'
 import nookies from 'nookies'
 
@@ -26,7 +26,7 @@ export default function LoginScreen() {
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ githubUser: 'RafaelWDC'})
+                            body: JSON.stringify({ githubUser: githubUser})
                         })
                         .then(async (respostaDoServer) => {
                             const dadosDaResposta = await respostaDoServer.json()
