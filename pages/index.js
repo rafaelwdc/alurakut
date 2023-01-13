@@ -1,4 +1,6 @@
 import React from 'react'
+import nookies from 'nookies'
+import jwt from 'jsonwebtoken'
 import MainGrid from '../src/componentes/MainGrid'
 import Box from '../src/componentes/Box'
 import { AlurakutMenu, AlurakutProfileSidebarMenuDefault, OrkutNostalgicIconSet } from '../src/lib/AlurakutCommuns'
@@ -23,8 +25,8 @@ function ProfileSidebar(propriedades) {
 
 
 
-export default function Home() {
-  const githubUser = 'rafaelwdc'
+export default function Home(props) {
+  const githubUser = props.githubUser
   const [comunidades, setComunidades] = React.useState([])
   const [seguidores, setSeguidores] = React.useState([])
   const pessoasFavoritas = [
@@ -159,7 +161,7 @@ export default function Home() {
             </h2>
             <ul>
               {seguidores.map((itemAtual) => {
-                {}
+                { }
                 return (
                   < li key={itemAtual.id} >
                     <a href={`/users/${itemAtual.login}`} >
@@ -211,4 +213,29 @@ export default function Home() {
   )
 }
 
+export async function getServerSideProps(context) {
+  const cookies = nookies.get(context)
+  const token = cookies.USER_TOKEN;
+  const { isAuthenticated } = await fetch('https://alurakut.vercel.app/api/auth', {
+    headers: {
+      Authorization: token
+    }
+  })
+  .then((resposta) => resposta.json())
 
+  if (!isAuthenticated) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  const { githubUser } = jwt.decode(token)
+  return {
+    props: {
+      githubUser
+    }, // will be passed to the page component as props
+  }
+}
