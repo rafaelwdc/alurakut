@@ -39,7 +39,7 @@ export default function Home(props) {
   ]
 
   React.useEffect(function () {
-    fetch('https://api.github.com/users/peas/followers')
+    fetch(`https://api.github.com/users/${githubUser}/followers`)
       .then(resposta => resposta.json())
       .then(function (seguidores) {
         let seguidoreesArray = []
